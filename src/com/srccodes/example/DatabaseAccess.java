@@ -14,19 +14,25 @@ public class DatabaseAccess extends HttpServlet{
    public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
    
+	   String url = "/result.jsp";
+	   
+	   Student student = null;
+	   
+	   List<Student> studentList = new ArrayList<Student>();
+	   
       // JDBC driver name and database URL
        final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
        final String DB_URL="jdbc:mysql://localhost/mysql";
 
       //  Database credentials
        final String USER = "root";
-       final String PASS = "Dont4get!";
+       final String PASS = "Look2find!";
 
       // Set response content type
       response.setContentType("text/html");
       PrintWriter out = response.getWriter();
       String title = "Database Result";
-      
+     HttpSession session = request.getSession();
       String docType =
          "<!doctype html public \"-//w3c//dtd html 4.0 " + "transitional//en\">\n";
       
@@ -56,12 +62,20 @@ public class DatabaseAccess extends HttpServlet{
             String first = rs.getString("student_name");
            // String last = rs.getString("last");
 
+            student = new Student();
+            student.setId(id);
+            student.setName(first);
+            
+            studentList.add(student);
+            
             //Display values
-           out.println("ID: " + id + "<br>");
+           //System.out.println("ID: " + id + "<br>");
          //   out.println(", Age: " + age + "<br>");
-            out.println(", First: " + first + "<br>");
+            //System.out.println(", First: " + first + "<br>");
            // out.println(", Last: " + last + "<br>");
          }
+         
+         session.setAttribute("resultSet",rs);
          out.println("</body></html>");
 
          // Clean-up environment
@@ -87,6 +101,10 @@ public class DatabaseAccess extends HttpServlet{
 //         } catch(SQLException se) {
 //            se.printStackTrace();
 //         } //end finally try
+    	  request.setAttribute("students", studentList);
+    	  getServletContext()
+          .getRequestDispatcher(url)
+          .forward(request, response);
       } //end try
    }
 } 
